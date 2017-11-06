@@ -1,0 +1,26 @@
+import PrimeraEntrega.*
+
+describe "test Morty"{
+	var morty = new Companiero(100)
+	var lataDeGaseosa = new Lata(1)
+	var lataDePalmitos = new Lata(5)
+	var lataDeDurazno = new Lata(10)
+	var lataDeSardinas = new Lata(15)
+//	var cable = new Cable(10, 0.4)
+	
+	fixture{
+		morty.recolectar(lataDePalmitos)
+		morty.recolectar(lataDeGaseosa)
+		morty.recolectar(lataDeDurazno)
+	}
+	
+test "pruba de puedeRecolectar" {
+	assert.notThat(morty.puedeRecolectar(lataDeGaseosa))
+}
+
+
+test "pruba de recolectar" {
+	assert.throwsException({morty.recolectar(lataDeSardinas)})
+}
+	
+}
