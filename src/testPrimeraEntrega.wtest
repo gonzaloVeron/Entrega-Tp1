@@ -6,7 +6,6 @@ describe "test Morty"{
 	var lataDePalmitos = new Lata(5)
 	var lataDeDurazno = new Lata(10)
 	var lataDeSardinas = new Lata(15)
-//	var cable = new Cable(10, 0.4)
 	
 	fixture{
 		morty.recolectar(lataDePalmitos)

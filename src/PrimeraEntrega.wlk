@@ -23,7 +23,7 @@ class Companiero {
 	}
 	
 	method darObjetosA(unCompaniero){
-		
+		return 0
 	} 
 }
 
