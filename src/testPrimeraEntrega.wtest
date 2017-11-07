@@ -6,20 +6,51 @@ describe "test Morty"{
 	var lataDePalmitos = new Lata(5)
 	var lataDeDurazno = new Lata(10)
 	var lataDeSardinas = new Lata(15)
+	var cableRojo = new Cable(100,2)
+	var fleebJoven = new Fleeb(13)
+	var materiaOscuraClara = new MateriaOscura(lataDeSardinas)
 	
 	fixture{
 		morty.recolectar(lataDePalmitos)
-		morty.recolectar(lataDeGaseosa)
-		morty.recolectar(lataDeDurazno)
+	//	morty.recolectar(lataDeGaseosa)
+	//	morty.recolectar(lataDeDurazno)
 	}
 	
-test "pruba de puedeRecolectar" {
-	assert.notThat(morty.puedeRecolectar(lataDeGaseosa))
+test "prueba de un material Lata"{
+	assert.equals(1,lataDeGaseosa.gramosDeMetal()) 	 
+	assert.notThat(lataDeGaseosa.esRadiactivo()) 
+	assert.equals(0,lataDeGaseosa.energiaQueProduce())
+	assert.equals(0.1,lataDeGaseosa.conductividadElectrica())
+}
+test "prueba de un material Cable"{
+	assert.equals(0.2,cableRojo.gramosDeMetal()) 	 
+	assert.notThat(cableRojo.esRadiactivo()) 
+	assert.equals(0,cableRojo.energiaQueProduce())
+	assert.equals(6,cableRojo.conductividadElectrica())
+}
+test "prueba de un material Fleeb joven q comio:lataDeGaseosa y lataDePalmitos"{
+	fleebJoven.consumirMaterial(lataDeGaseosa)
+	fleebJoven.consumirMaterial(lataDePalmitos)
+	assert.equals(6,fleebJoven.gramosDeMetal()) 	 
+	assert.notThat(fleebJoven.esRadiactivo()) 
+	assert.equals(0,fleebJoven.energiaQueProduce())
+	assert.equals(0.1,fleebJoven.conductividadElectrica())
 }
 
+test "prueba de un material Materia Oscura"{
+	assert.equals(15,materiaOscuraClara.gramosDeMetal()) 	 
+	assert.notThat(materiaOscuraClara.esRadiactivo()) 
+	assert.equals(0,materiaOscuraClara.energiaQueProduce())
+	assert.equals(0.75,materiaOscuraClara.conductividadElectrica())
+}
 
-test "pruba de recolectar" {
+test "prueba de puedeRecolectar y intento fallido de recolectar LataDeSardinas" {
+	morty.recolectar(lataDeDurazno)
+	morty.recolectar(lataDeGaseosa)
+	assert.notThat(morty.puedeRecolectar(lataDeSardinas))
 	assert.throwsException({morty.recolectar(lataDeSardinas)})
 }
+
+
 	
 }

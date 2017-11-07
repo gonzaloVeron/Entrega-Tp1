@@ -19,11 +19,11 @@ class Companiero {
 	}
 
 	method consumirEnergia(unMaterial){
-		energia -= unMaterial.gramosMetal()
+		energia -= unMaterial.gramosDeMetal()
 	}
 	
 	method darObjetosA(unCompaniero){
-		return 0
+		
 	} 
 }
 
@@ -69,7 +69,7 @@ class Cable inherits Material{
 	}
 	
 	override method gramosDeMetal(){
-		return longitud/1000*seccion
+		return (longitud/1000)*seccion
 	}
 	
 	override method conductividadElectrica(){
@@ -93,18 +93,38 @@ class Fleeb inherits Material{
 		return edad>=15
 	}
 	
-	method materialComidoQueMasEnergiaProduce(){}
+	method materialComidoQueMasEnergiaProduce(){
+		return materialesConsumidos.max({material=>material.energiaQueProduce()})
+	}
 	
 	override method energiaQueProduce(){
-		return materialesConsumidos.max({material=>material.energiaQueProduce()}).energiaQueProduce()
+		return self.materialComidoQueMasEnergiaProduce().energiaQueProduce()
 	}
 	
 	override method gramosDeMetal(){
 		return materialesConsumidos.sum({material=>material.gramosDeMetal()})
 	}
-	
+	method materialConsumidoConMenosConductividadElec(){
+		return materialesConsumidos.min({material=>material.conductividadElectrica()})
+	}
 	override method conductividadElectrica(){
-		return  materialesConsumidos.min({material=>material.conductividadElectrica()}).conductividadELectrica()
+		return  self.materialConsumidoConMenosConductividadElec().conductividadElectrica()
 	}	
 }
-
+class MateriaOscura inherits Material{
+	var materialBase
+	constructor (_materialBase){
+		materialBase = _materialBase
+	}
+	override method gramosDeMetal(){
+		return materialBase.gramosDeMetal()
+	}
+	
+	override method conductividadElectrica(){
+		return materialBase.conductividadElectrica() / 2 
+	}
+	
+	override method energiaQueProduce(){
+		return materialBase.energiaQueProduce()
+	} 
+}
