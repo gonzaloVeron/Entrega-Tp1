@@ -36,22 +36,11 @@ class Companiero {
 	}
 	
 	method darObjetosA(unCompaniero){
-		unCompaniero.recibirObjetos(mochila)
+		unCompaniero.recibir(mochila)
 		mochila.clear()
 	} 
 }
 
-object rick{
-	var mochila = []
-
-	method mochila(){
-		return mochila
-	}
-	
-	method recibirObjetos(unaMochila){
-			mochila.addAll(unaMochila) 
-	}
-}
 
 class Material{
 
@@ -164,9 +153,9 @@ class Fleeb inherits Material{
 		else{
 			return 10
 		}
-	}
-	
+	}	
 }
+
 class MateriaOscura inherits Material{
 	var materialBase
 	constructor (_materialBase){
@@ -184,3 +173,58 @@ class MateriaOscura inherits Material{
 		return materialBase.energiaQueProduce()*2
 	} 
 }
+
+class Bateria inherits Material{
+}
+
+class Circuito inherits Material{
+	
+}
+
+
+class Experimento{
+	method receta()	
+	method efecto()
+}
+
+class ConstruirBateria inherits Experimento{
+	override method receta(){
+		
+	}	
+}
+
+class ConstruirCircuito inherits Experimento{
+	
+}
+
+class ShockElectrico{
+	method efecto(){
+		
+	}
+}
+
+object rick{
+	var mochila = []
+	var experimentos = []
+
+	method aprenderNuevoExperimento(unExperimento){
+		experimentos.add(unExperimento)
+	}
+
+	method mochila(){
+		return mochila
+	}
+	
+	method recibir(unosMateriales){
+		mochila.addAll(unosMateriales) 
+	}
+	
+	method experimentosQuePuedeRealizar(){
+		
+	}
+	
+	method realizar(unExperimento){}
+}
+
+
+
