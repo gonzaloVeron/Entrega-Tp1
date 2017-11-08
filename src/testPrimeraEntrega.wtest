@@ -8,12 +8,17 @@ describe "test Morty"{
 	var lataDeSardinas = new Lata(15)
 	var cableRojo = new Cable(100,2)
 	var fleebJoven = new Fleeb(13)
+	var fleebViejo = new Fleeb(17)
 	var materiaOscuraClara = new MateriaOscura(lataDeSardinas)
 	
 	fixture{
 		morty.recolectar(lataDePalmitos)
 	//	morty.recolectar(lataDeGaseosa)
 	//	morty.recolectar(lataDeDurazno)
+	fleebJoven.consumirMaterial(lataDeGaseosa)
+	fleebJoven.consumirMaterial(lataDePalmitos)
+	fleebViejo.consumirMaterial(lataDeGaseosa)
+	fleebViejo.consumirMaterial(lataDePalmitos)
 	}
 	
 test "prueba de un material Lata"{
@@ -29,8 +34,6 @@ test "prueba de un material Cable"{
 	assert.equals(6,cableRojo.conductividadElectrica())
 }
 test "prueba de un material Fleeb joven q comio:lataDeGaseosa y lataDePalmitos"{
-	fleebJoven.consumirMaterial(lataDeGaseosa)
-	fleebJoven.consumirMaterial(lataDePalmitos)
 	assert.equals(6,fleebJoven.gramosDeMetal()) 	 
 	assert.notThat(fleebJoven.esRadiactivo()) 
 	assert.equals(0,fleebJoven.energiaQueProduce())
@@ -51,6 +54,19 @@ test "prueba de puedeRecolectar y intento fallido de recolectar LataDeSardinas" 
 	assert.throwsException({morty.recolectar(lataDeSardinas)})
 }
 
+test "prueba de morty al recolectar fleeb no radioactivo"{
+	morty.recolectar(fleebJoven)
+	assert.equals(93, morty.energia())
+}
 
-	
+test "prueba de morty al recolectar fleeb radioactivo "{
+	morty.recolectar(fleebViejo)
+	assert.equals(83, morty.energia())
+}
+
+test "morty le pasa sus objetos a summer"{
+	morty.darObjetosA(rick)
+	assert.equals([], morty.mochila())
+	assert.equals([lataDePalmitos], rick.mochila())
+}	
 }

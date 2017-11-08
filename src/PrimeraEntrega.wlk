@@ -1,13 +1,21 @@
 class Companiero {
 	var energia 
-	var mochila = #{}
+	var mochila = []
 	
 	constructor(_energia){
 		energia = _energia
 	}
 	
+	method energia(){
+		return energia
+	}
+	
+	method mochila(){
+		return mochila
+	}
+	
 	method puedeRecolectar(unMaterial){
-		return mochila.size()<3 && (energia >= unMaterial.gramosDeMetal())
+		return mochila.size()<3 && (energia >= unMaterial.energiaParaRecolectarlo())
 	}
 	
 	method recolectar(unMaterial){
@@ -16,15 +24,33 @@ class Companiero {
 		}
 		mochila.add(unMaterial)
 		self.consumirEnergia(unMaterial)
+		self.bonusPorRecolectar(unMaterial)
+	}
+	
+	method bonusPorRecolectar(unMaterial){
+		energia += unMaterial.bonusPorRecolectar()
 	}
 
 	method consumirEnergia(unMaterial){
-		energia -= unMaterial.gramosDeMetal()
+		energia -= unMaterial.energiaAlRecolectar()
 	}
 	
 	method darObjetosA(unCompaniero){
-		
+		unCompaniero.recibirObjetos(mochila)
+		mochila.clear()
 	} 
+}
+
+object rick{
+	var mochila = []
+
+	method mochila(){
+		return mochila
+	}
+	
+	method recibirObjetos(unaMochila){
+			mochila.addAll(unaMochila) 
+	}
 }
 
 class Material{
@@ -40,6 +66,17 @@ class Material{
 		return 0
 	}
 	
+	method energiaParaRecolectarlo(){
+		return self.gramosDeMetal()
+	}
+	
+	method energiaAlRecolectar(){
+		return self.gramosDeMetal()
+	}
+	
+	method bonusPorRecolectar(){
+		return 0
+	}
 }
 
 
@@ -110,6 +147,25 @@ class Fleeb inherits Material{
 	override method conductividadElectrica(){
 		return  self.materialConsumidoConMenosConductividadElec().conductividadElectrica()
 	}	
+
+	override method energiaParaRecolectarlo(){
+		return self.gramosDeMetal()*2
+	}
+	
+	override method energiaAlRecolectar(){
+		return super()*2 			
+	}
+	
+		
+	override method bonusPorRecolectar(){
+		if(self.esRadiactivo()){
+			return 0	
+		}
+		else{
+			return 10
+		}
+	}
+	
 }
 class MateriaOscura inherits Material{
 	var materialBase
@@ -125,6 +181,6 @@ class MateriaOscura inherits Material{
 	}
 	
 	override method energiaQueProduce(){
-		return materialBase.energiaQueProduce()
+		return materialBase.energiaQueProduce()*2
 	} 
 }
