@@ -11,6 +11,7 @@ describe "test Morty"{
 	var fleebViejo = new Fleeb(17)
 	var materiaOscuraClara = new MateriaOscura(lataDeSardinas)
 	
+	
 	fixture{
 		morty.recolectar(lataDePalmitos)
 	//	morty.recolectar(lataDeGaseosa)

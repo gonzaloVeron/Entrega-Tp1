@@ -293,6 +293,7 @@ object rick{
 	}
 
 	//----
+	
 		
 	method aprenderNuevoExperimento(unExperimento){
 		experimentos.add(unExperimento)
