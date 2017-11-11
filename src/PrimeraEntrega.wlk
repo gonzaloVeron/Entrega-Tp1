@@ -38,7 +38,13 @@ class Companiero {
 	method darObjetosA(unCompaniero){
 		unCompaniero.recibir(mochila)
 		mochila.clear()
-	} 
+	}
+	
+	//--
+	
+	method aumentarEnergia(valor){
+		energia += valor
+	}
 }
 
 
@@ -174,57 +180,143 @@ class MateriaOscura inherits Material{
 	} 
 }
 
+/*---------------------------------------------------------------------------------- */
+
+
 class Bateria inherits Material{
+	var componentes
+	
+	constructor(_componentes){
+		componentes = _componentes
+	}
+	override method gramosDeMetal(){
+		return componentes.sum({componente=>componente.gramosDeMetal()})
+	}
+	
+	override method conductividadElectrica() = 0
+
+	override method esRadiactivo() = false
+	
+	override method energiaQueProduce(){
+		return 2*self.gramosDeMetal()
+	}
 }
 
 class Circuito inherits Material{
+	var componentes
 	
+	constructor(_componentes){
+		componentes = _componentes
+	}
+	override method gramosDeMetal(){
+		return componentes.sum({componente => componente.gramosDeMetal()})
+	}
+	
+	override method conductividadElectrica() = componentes.sum({componente => componente.conductividadElectrica()}) * 3
+
+	override method esRadiactivo() = componentes.any({componente => componente.esRadiactivo()})
+	
+	override method energiaQueProduce(){
+		return 0
+	}	
 }
 
+/*---------------------------------------------------------------------------------- */
 
 class Experimento{
-	method receta()	
+	method cumpleLosRequisito(materiales)	
 	method efecto()
 }
 
 class ConstruirBateria inherits Experimento{
-	override method receta(){
-		
-	}	
+	override method cumpleLosRequisito(materiales){
+		return self.hayMaterialConMasDe200GramosDeMetal(materiales) && self.hayMaterialRadiactivo(materiales)
+	}
+	
+	override method efecto(){
+		//COMPLETAR
+		//rick.mochila().add(new Bateria())
+	}
+	
+	//---
+	
+	method hayMaterialConMasDe200GramosDeMetal(materiales){
+		return materiales.any({material => material.gramosDeMetal() > 200})
+	}
+	
+	method hayMaterialRadiactivo(materiales){
+		return materiales.any({material => material.esRadiactivo()})	
+	}
+
 }
 
 class ConstruirCircuito inherits Experimento{
+	override method cumpleLosRequisito(materiales){
+		return materiales.any({material => material.conductividadElectrica() >= 5})
+	}
 	
+	method efecto(){
+		//COMPLETAR
+		//rick.mochila().add(new Circuito())
+	}
 }
 
-class ShockElectrico{
+class ShockElectrico inherits Experimento{
+	override method cumpleLosRequisito(materiales){
+		return materiales.any({material => material.conductividadElectrica() > 0}) && materiales.any({materiales => material.energiaQueProduce() > 0})
+	}
+	
 	method efecto(){
-		
+		rick.companiero().aumentarEnergia(//COMPLETAR)	
 	}
 }
 
 object rick{
-	var mochila = []
+	var companiero 
+	var mochila = [] //infinita
 	var experimentos = []
-
-	method aprenderNuevoExperimento(unExperimento){
-		experimentos.add(unExperimento)
-	}
-
-	method mochila(){
-		return mochila
-	}
 	
 	method recibir(unosMateriales){
 		mochila.addAll(unosMateriales) 
 	}
 	
 	method experimentosQuePuedeRealizar(){
-		
+		return experimentos.filter({experimento=> experimento.requisito(mochila)})
 	}
 	
-	method realizar(unExperimento){}
+	method realizar(unExperimento){
+		if(!self.experimentosQuePuedeRealizar().contains(unExperimento)){
+			self.error("No puede realizar el experimento")
+		}	
+		self.removerMaterialesUsados(self.buscarMateriales(unExperimento))
+		unExperimento.efecto()
+	}
+
+	//----
+		
+	method aprenderNuevoExperimento(unExperimento){
+		experimentos.add(unExperimento)
+	}
+	
+	method companiero(unCompaniero){
+		companiero = unCompaniero
+	}
+	
+	method removerMaterialesUsados(materiales){
+		mochila.removeAll(materiales)
+	}	
+	
+	//----
+	
+	method companiero(){
+		return companiero
+	}
+	
+	method mochila(){
+		return mochila
+	}
 }
+		
 
 
 
