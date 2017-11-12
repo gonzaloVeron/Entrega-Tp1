@@ -214,57 +214,63 @@ class Circuito inherits Material{
 	override method conductividadElectrica() = componentes.sum({componente => componente.conductividadElectrica()}) * 3
 
 	override method esRadiactivo() = componentes.any({componente => componente.esRadiactivo()})
-	
-	override method energiaQueProduce(){
-		return 0
-	}	
 }
 /*---------------------------------------------------------------------------------- */
+
 object rick{
 	var companiero 
 	var mochila = [] //infinita
 	var experimentos = []
-	var componentes = []
 	
 	method recibir(unosMateriales){
 		mochila.addAll(unosMateriales) 
 	}
+	
 	method experimentosQuePuedeRealizar(){
 		return experimentos.filter({experimento=> experimento.cumpleLosRequisito(mochila)})
 	}
+	
 	method realizar(unExperimento){
 		if(!self.experimentosQuePuedeRealizar().contains(unExperimento)){
 			self.error("No puede realizar el experimento")
 		}	
-		self.buscarMaterialesParaComponentes(unExperimento)
-		unExperimento.efecto(self,self.componentes())
-		self.removerMateriales(self.componentes())
+		self.materialesParaExperimento(unExperimento)
+		self.removerMateriales(self.materialesParaExperimento(unExperimento))///arreglar
+		unExperimento.efecto(self,self.materialesParaExperimento(unExperimento))////arreglar
 	}
-	method buscarMaterialesParaComponentes(unExperimento){
-		componentes =  mochila.filter({material=>unExperimento.esMaterialParaConponente(material)})
+	
+	////Arreglar
+	method materialesParaExperimento(unExperimento){
+		return mochila.filter({material=>unExperimento.esMaterialParaComponente(material)})
 	}
+	////	
+
 	method removerMateriales(materiales){
 		mochila.removeAll(materiales)
 	}
+	
 	//----
 	method aprenderNuevoExperimento(unExperimento){
 		experimentos.add(unExperimento)
 	}
+	
 	method asignarCompaniero(unCompaniero){
 		companiero = unCompaniero
 	}
+	
 	method mochila(){
 		return mochila
 	}
+	
 	method agregarMaterial(unMaterial){
 		mochila.add(unMaterial)
 	}
-	method componentes() = componentes
+	
 	method companiero() = companiero
 }
 class Experimento{
 	method cumpleLosRequisito(materiales)	
-	method esMaterialParaConponente(material)
+	method esMaterialParaComponente(material)
 	method efecto(unCreador,materiales)
 }
 class ConstruirBateria inherits Experimento{
@@ -280,13 +286,18 @@ class ConstruirBateria inherits Experimento{
 		return materiales.any({material => material.esRadiactivo()})	
 	}
 	
-	override method esMaterialParaConponente(material){
+	//////Arreglar
+	override method esMaterialParaComponente(material){
 		return material.gramosDeMetal() > 200 || material.esRadiactivo()
 	}
+	/////
+
+	/////Arreglar
 	override method efecto(unCreador,materiales){
 		unCreador.agregarMaterial(new Bateria(materiales))
 		unCreador.companiero().perderEnergia(5)
 	}
+	////
 
 }
 
@@ -294,32 +305,44 @@ class ConstruirCircuito inherits Experimento{
 	override method cumpleLosRequisito(materiales){
 		return materiales.any({material => material.conductividadElectrica() >= 5})
 	}
-	override method esMaterialParaConponente(material){
-		return material.gramosDeMetal() >= 5
+	
+	override method esMaterialParaComponente(material){
+		return material.conductividadElectrica() >= 5
 	}
+	
 	override method efecto(unCreador,materiales){
 		unCreador.agregarMaterial(new Circuito(materiales))
 	}
 }
+
+
+
+
 class ShockElectrico inherits Experimento{
 	override method cumpleLosRequisito(materiales){
 		return materiales.any({material => material.conductividadElectrica() > 0}) && materiales.any({material => material.energiaQueProduce() > 0})
 	}
-		override method esMaterialParaConponente(material){
+	
+	override method esMaterialParaComponente(material){
 		return material.conductividadElectrica() > 0 || material.energiaQueProduce() > 0
 	}
+	
 	override method efecto(unCreador,materiales){
 		unCreador.companiero().aumentarEnergia(self.capacidadGenerador(materiales) * self.capacidadConductor(materiales))
 	}
+	
 	method capacidadGenerador(materiales){
 		return self.materialGenerador(materiales).energiaQueProduce()
 	}
+	
 	method materialGenerador(materiales){
 		return materiales.find({material=>material.energiaQueProduce() > 0})
 	}
+	
 	method capacidadConductor(materiales){
 		return self.materialConductor(materiales).conductividadElectrica()
 	}
+	
 	method materialConductor(materiales){
 		return materiales.find({material=>material.conductividadElectrica() > 0})
 	}
