@@ -233,10 +233,11 @@ object rick{
 	method realizar(unExperimento){
 		if(!self.experimentosQuePuedeRealizar().contains(unExperimento)){
 			self.error("No puede realizar el experimento")
-		}	
-		self.materialesParaExperimento(unExperimento)
-		self.removerMateriales(self.materialesParaExperimento(unExperimento))///arreglar
-		unExperimento.efecto(self,self.materialesParaExperimento(unExperimento))////arreglar
+		}
+		self.removerMateriales(unExperimento.materialesParaRealizarlo(mochila))
+		unExperimento.efecto(self,unExperimento.materialesParaRealizarlo(mochila))	
+		//self.removerMateriales(self.materialesParaExperimento(unExperimento))///arreglar
+		//unExperimento.efecto(self,self.materialesParaExperimento(unExperimento))////arreglar
 	}
 	
 	////Arreglar
@@ -268,11 +269,15 @@ object rick{
 	
 	method companiero() = companiero
 }
+
+
 class Experimento{
 	method cumpleLosRequisito(materiales)	
 	method esMaterialParaComponente(material)
 	method efecto(unCreador,materiales)
 }
+
+
 class ConstruirBateria inherits Experimento{
 	override method cumpleLosRequisito(materiales){
 		return self.hayMaterialConMasDe200GramosDeMetal(materiales) && self.hayMaterialRadiactivo(materiales)
@@ -291,6 +296,15 @@ class ConstruirBateria inherits Experimento{
 		return material.gramosDeMetal() > 200 || material.esRadiactivo()
 	}
 	/////
+	
+	method materialesParaRealizarlo(materiales){
+		if(materiales.any({material=>material.gramosDeMetal()>200 && material.esRadiactivo()})){
+			return [materiales.find(material.gramosDeMetal()>200 && material.esRadiactivo())]
+		}
+		else{
+			return [materiales.find(material.gramosDeMetal()>200)]//+[materiales.find(material.esRadiactivo())]
+		}
+	}
 
 	/////Arreglar
 	override method efecto(unCreador,materiales){
@@ -347,6 +361,7 @@ class ShockElectrico inherits Experimento{
 		return materiales.find({material=>material.conductividadElectrica() > 0})
 	}
 }
+
 
 
 
