@@ -1,6 +1,6 @@
 import PrimeraEntrega.*
 
-describe "test Morty"{
+describe "test Morty"{ 	
 	var morty = new Companiero(400)
 	var lataDeGaseosa = new Lata(1)
 	var lataDePalmitos = new Lata(5)
@@ -14,6 +14,7 @@ describe "test Morty"{
 // 	var experimentoCircuito = new ConstruirCircuito()
 //	var experimentoShockElectrico = new ShockElectrico()
 	
+	var bateria1= new Bateria([lataPesada,fleebViejo])
 	
 	fixture{
 		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
@@ -75,15 +76,18 @@ test "resultado de morty al darle los elementos(lata pesada y fleebViejo) a rick
 	assert.equals([lataPesada,fleebViejo],rick.mochila())
 	assert.equals([],morty.mochila())
 }
+
 test "experimentos q puede relaizar rick"{
 	morty.darObjetosA(rick)
 	assert.equals([experimentoBateria],rick.experimentosQuePuedeRealizar())
 }
+
+
 test "rick realiza el experimento ContruirBateria"{
 	morty.darObjetosA(rick)
 	rick.realizar(experimentoBateria)
 
-	assert.equals([],rick.mochila())	
+	assert.equals([bateria1],rick.mochila())	
 }
 
 }
