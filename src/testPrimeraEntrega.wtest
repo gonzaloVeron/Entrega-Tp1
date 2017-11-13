@@ -2,92 +2,145 @@ import PrimeraEntrega.*
 
 describe "test Morty"{ 	
 	var morty = new Companiero(400)
+	
+	//--Latas
 	var lataDeGaseosa = new Lata(1)
 	var lataDePalmitos = new Lata(5)
 	var lataDeSardinas = new Lata(15)
 	var lataPesada = new Lata(250)
+	//--
+	
+	//-- Cables
 	var cableRojo = new Cable(100,2)
+	var cableAzul = new Cable(100,5)
+	var cableVerde = new Cable(100,1)
+	//--
+	
+	//-- Fleebs
 	var fleebJoven = new Fleeb(13)
 	var fleebViejo = new Fleeb(17)
-	var materiaOscuraClara = new MateriaOscura(lataDeSardinas)
-	var experimentoBateria = new ConstruirBateria()
-// 	var experimentoCircuito = new ConstruirCircuito()
-//	var experimentoShockElectrico = new ShockElectrico()
+	//-- 
 	
-	var bateria1= new Bateria([lataPesada,fleebViejo])
+	//-- Experimentos
+	var experimentoBateria = new ConstruirBateria()
+ 	var experimentoCircuito = new ConstruirCircuito()
+	var experimentoShockElectrico = new ShockElectrico()
+	//--
+
+	var materiaOscuraClara = new MateriaOscura(lataDeSardinas)
+	var bateria1 = new Bateria([lataPesada,fleebViejo])
+	var circuito1 = new Circuito([cableRojo,cableAzul])
 	
 	fixture{
-		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
 		fleebJoven.consumirMaterial(lataDeGaseosa)
 		fleebJoven.consumirMaterial(lataDePalmitos)
 		fleebViejo.consumirMaterial(lataDeGaseosa)
 		fleebViejo.consumirMaterial(lataDePalmitos)
-		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
-		
+		//--
 		rick.asignarCompaniero(morty)
 		rick.aprenderNuevoExperimento(experimentoBateria)
-	//	rick.aprenderNuevoExperimento(experimentoCircuito)
-	//	rick.aprenderNuevoExperimento(experimentoShockElectrico)
+		rick.aprenderNuevoExperimento(experimentoCircuito)
+		rick.aprenderNuevoExperimento(experimentoShockElectrico)
+	}
+		
+	test "prueba de un material Lata"{
+		assert.equals(250,lataPesada.gramosDeMetal()) 	 
+		assert.notThat(lataPesada.esRadiactivo()) 
+		assert.equals(0,lataPesada.energiaQueProduce())
+		assert.equals(25,lataPesada.conductividadElectrica())
 	}
 	
-test "prueba de un material Lata"{
-	assert.equals(250,lataPesada.gramosDeMetal()) 	 
-	assert.notThat(lataPesada.esRadiactivo()) 
-	assert.equals(0,lataPesada.energiaQueProduce())
-	assert.equals(25,lataPesada.conductividadElectrica())
-}
-test "prueba de un material Cable"{
-	assert.equals(0.2,cableRojo.gramosDeMetal()) 	 
-	assert.notThat(cableRojo.esRadiactivo()) 
-	assert.equals(0,cableRojo.energiaQueProduce())
-	assert.equals(6,cableRojo.conductividadElectrica())
-}
-test "prueba de un material Fleeb joven q comio:lataDeGaseosa y lataDePalmitos"{
-	assert.equals(6,fleebJoven.gramosDeMetal()) 	 
-	assert.notThat(fleebJoven.esRadiactivo()) 
-	assert.equals(0,fleebJoven.energiaQueProduce())
-	assert.equals(0.1,fleebJoven.conductividadElectrica())
-}
-
-test "prueba de un material Materia Oscura"{
-	assert.equals(15,materiaOscuraClara.gramosDeMetal()) 	 
-	assert.notThat(materiaOscuraClara.esRadiactivo()) 
-	assert.equals(0,materiaOscuraClara.energiaQueProduce())
-	assert.equals(0.75,materiaOscuraClara.conductividadElectrica())
-}
-
-test "prueba de puedeRecolectar y intento fallido de recolectar LataDeSardinas" {
-	morty.recolectar(lataDeGaseosa)
-	assert.notThat(morty.puedeRecolectar(lataDeSardinas))
-	assert.throwsException({morty.recolectar(lataDeSardinas)})
-}
-test "prueba de morty al recolectar fleeb radioactivo "{
-	morty.recolectar(fleebViejo)
-	assert.equals(126, morty.energia())
-}
-
-test "prueba de morty al recolectar fleeb no radioactivo"{
-	morty.recolectar(fleebJoven)
-	assert.equals(136, morty.energia())
-}
-
-test "resultado de morty al darle los elementos(lata pesada y fleebViejo) a rick"{		
-	morty.darObjetosA(rick)
-	assert.equals([lataPesada,fleebViejo],rick.mochila())
-	assert.equals([],morty.mochila())
-}
-
-test "experimentos q puede relaizar rick"{
-	morty.darObjetosA(rick)
-	assert.equals([experimentoBateria],rick.experimentosQuePuedeRealizar())
-}
-
-
-test "rick realiza el experimento ContruirBateria"{
-	morty.darObjetosA(rick)
-	rick.realizar(experimentoBateria)
-
-	assert.equals([bateria1],rick.mochila())	
-}
+	test "prueba de un material Cable"{
+		assert.equals(0.2,cableRojo.gramosDeMetal()) 	 
+		assert.notThat(cableRojo.esRadiactivo()) 
+		assert.equals(0,cableRojo.energiaQueProduce())
+		assert.equals(6,cableRojo.conductividadElectrica())
+	}
+	
+	test "prueba de un material Fleeb joven que comio:lataDeGaseosa y lataDePalmitos"{
+		assert.equals(6,fleebJoven.gramosDeMetal()) 	 
+		assert.notThat(fleebJoven.esRadiactivo()) 
+		assert.equals(0,fleebJoven.energiaQueProduce())
+		assert.equals(0.1,fleebJoven.conductividadElectrica())
+	}
+	
+	test "prueba de un material Materia Oscura"{
+		assert.equals(15,materiaOscuraClara.gramosDeMetal()) 	 
+		assert.notThat(materiaOscuraClara.esRadiactivo()) 
+		assert.equals(0,materiaOscuraClara.energiaQueProduce())
+		assert.equals(0.75,materiaOscuraClara.conductividadElectrica())
+	}
+	
+	test "prueba y error de puedeRecolectar LataDeSardinas" {
+		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
+		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
+		morty.recolectar(lataDeGaseosa)
+		
+		assert.notThat(morty.puedeRecolectar(lataDeSardinas))
+		assert.throwsException({morty.recolectar(lataDeSardinas)})
+	}
+	
+	test "prueba de morty al recolectar fleeb radioactivo "{
+		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
+		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
+		morty.recolectar(fleebViejo)
+		
+		assert.equals(126, morty.energia())
+	}
+	
+	test "prueba de morty al recolectar fleeb no radioactivo"{	
+		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
+		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
+		morty.recolectar(fleebJoven)
+		
+		assert.equals(136, morty.energia())
+	}
+	
+	test "resultado de morty al darle los elementos(lata pesada y fleebViejo) a rick"{	
+		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
+		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138	
+		morty.darObjetosA(rick)
+		
+		assert.equals([lataPesada,fleebViejo],rick.mochila())
+		assert.equals([],morty.mochila())
+	}
+	
+	test "experimentos q puede relaizar rick"{
+		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
+		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
+		morty.darObjetosA(rick)
+		
+		assert.equals([experimentoBateria,experimentoCircuito],rick.experimentosQuePuedeRealizar())
+	}
+	
+	test "rick realiza el experimento ContruirBateria"{
+		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
+		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
+		morty.darObjetosA(rick)
+		
+		rick.realizar(experimentoBateria)
+		assert.equals(bateria1.componentes(),rick.mochila().first().componentes())
+		assert.equals(133,rick.companiero().energia())
+	}
+	
+	test "rick realiza el experimento ConstruirCircuito"{
+		morty.recolectar(cableRojo)
+		morty.recolectar(cableAzul)
+		morty.recolectar(cableVerde)
+		morty.darObjetosA(rick)
+		
+		rick.realizar(experimentoCircuito)
+		assert.equals(circuito1.componentes(),rick.mochila().last().componentes())
+	}
+	
+	test "rick realiza el experimento shockElectrico opcion 1"{
+		morty.recolectar(cableAzul)
+		morty.recolectar(bateria1)
+		morty.darObjetosA(rick)
+		
+		rick.realizar(experimentoShockElectrico)
+		assert.equals(7823.5 ,rick.companiero().energia())
+		assert.equals([],rick.mochila())
+	}
 
 }
