@@ -179,7 +179,7 @@ class Circuito inherits Material{
 
 object rick{
 	var companiero 
-	var mochila = [] //infinita
+	var mochila = []
 	var experimentos = []
 	var componentesParaExperimento = []
 	

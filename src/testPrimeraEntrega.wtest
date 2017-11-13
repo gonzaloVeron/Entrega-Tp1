@@ -133,7 +133,7 @@ describe "test Morty"{
 		assert.equals(circuito1.componentes(),rick.mochila().last().componentes())
 	}
 	
-	test "rick realiza el experimento shockElectrico opcion 1"{
+	test "rick realiza el experimento shockElectrico"{
 		morty.recolectar(cableAzul)
 		morty.recolectar(bateria1)
 		morty.darObjetosA(rick)
