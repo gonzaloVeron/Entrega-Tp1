@@ -5,20 +5,36 @@ class Companiero {
 	constructor(_energia){
 		energia = _energia
 	}
+	//Se van a modificar 
+	method puedeRecolectar(unMaterial) //Posible template method 
+		
+	method recolectar(unMaterial)
 	
-	method energia(){
-		return energia
+	method consumirEnergia(unMaterial)
+	
+	method darObjetosA(unCompaniero)
+	
+	//--------------
+	method aumentarEnergia(valor){
+		energia += valor
+	}
+	method perderEnergia(valor){
+		energia -= valor
+	}	
+	method bonusPorRecolectar(unMaterial){
+		energia += unMaterial.bonusPorRecolectar()
 	}
 	
-	method mochila(){
-		return mochila
-	}
+	method energia() = energia
 	
-	method puedeRecolectar(unMaterial){
-		return mochila.size()<3 && (energia >= unMaterial.energiaParaRecolectarlo())
-	}
+	method mochila() = mochila
+}
+
+class Morty inherits Companiero{
 	
-	method recolectar(unMaterial){
+	override method puedeRecolectar(unMaterial) = mochila.size()<3 && energia >= unMaterial.energiaParaRecolectarlo()
+		
+	override method recolectar(unMaterial){
 		if(!self.puedeRecolectar(unMaterial)){
 			self.error("No puede recolectar") 
 		}
@@ -27,27 +43,90 @@ class Companiero {
 		self.bonusPorRecolectar(unMaterial)
 	}
 	
-	method bonusPorRecolectar(unMaterial){
-		energia += unMaterial.bonusPorRecolectar()
-	}
-
-	method consumirEnergia(unMaterial){
+	override method consumirEnergia(unMaterial){
 		energia -= unMaterial.energiaParaRecolectarlo()
 	}
 	
-	method darObjetosA(unCompaniero){
+	override method darObjetosA(unCompaniero){
 		unCompaniero.recibir(mochila)
 		mochila.clear()
 	}
-	
-	method aumentarEnergia(valor){
-		energia += valor
-	}
-	method perderEnergia(valor){
-		energia -= valor
-	}
 }
 
+/** ----------------- */
+
+class Summer inherits Companiero{
+	
+	override method puedeRecolectar(unMaterial) = mochila.size() < 2 && energia >= unMaterial.energiaParaRecolectarlo()
+	
+	override method recolectar(unMaterial){
+		if(!self.puedeRecolectar(unMaterial)){
+			self.error("No puede recolectar") 
+		}
+		mochila.add(unMaterial)
+		self.consumirEnergia(unMaterial)
+		self.bonusPorRecolectar(unMaterial)
+	}
+	
+	override method consumirEnergia(unMaterial){
+		energia -= (unMaterial.energiaParaRecolectarlo() - unMaterial.energiaParaRecolectarlo() * 0.20)
+	}
+	
+	override method darObjetosA(unCompaniero){
+		unCompaniero.recibir(mochila)
+		unCompaniero.restarEnergia(10)
+		mochila.clear()
+	}	
+}
+
+/** -------------------------------- */
+
+class Jerry inherits Companiero{
+	var buenHumor = true
+	var sobreExitado = false
+	
+	override method puedeRecolectar(unMaterial){ //Feo
+		if(sobreExitado && !buenHumor){
+			return mochila.size() < 2 && energia >= unMaterial.energiaParaRecolectarlo()
+		}
+		else if(!sobreExitado && buenHumor){
+			return mochila.size() < 3 && energia >= unMaterial.energiaParaRecolectarlo()
+		}
+		else if (sobreExitado && buenHumor){
+			return mochila.size() < 6 && energia >= unMaterial.energiaParaRecolectarlo()
+		}
+		else{
+			return mochila.size() < 1 && energia >= unMaterial.energiaParaRecolectarlo()
+		}
+	}	
+		
+	override method recolectar(unMaterial){ //Feo  //Falta agregar la probabilidad de perder todo
+		if(!self.puedeRecolectar(unMaterial)){
+			self.error("No puede recolectar") 
+		}
+		mochila.add(unMaterial)
+		self.consumirEnergia(unMaterial)
+		self.bonusPorRecolectar(unMaterial)
+		
+		/**        Metodo ?       */
+		if(unMaterial.esUnSerVivo()){
+			buenHumor = true
+		}
+		/**---------------------- */
+	}
+
+	override method consumirEnergia(unMaterial){
+		energia -= unMaterial.energiaParaRecolectarlo()
+	}
+	
+	override method darObjetosA(unCompaniero){
+		unCompaniero.recibir(mochila)
+		mochila.clear()
+		buenHumor = false
+	}		
+}
+
+/**-------------------------------------------------------------------------------------------------------------------------- */
 
 class Material{
 
@@ -62,6 +141,8 @@ class Material{
 	method energiaParaRecolectarlo() = self.gramosDeMetal()
 	
 	method bonusPorRecolectar() = 0
+	
+	method esUnSerVivo() = false //Metodo agregado 
 }
 
 
@@ -90,7 +171,6 @@ class Cable inherits Material{
 	
 	override method conductividadElectrica() = 3 * seccion
 }
-
 
 class Fleeb inherits Material{
 	var edad
@@ -126,7 +206,9 @@ class Fleeb inherits Material{
 		else{
 			return 10
 		}
-	}	
+	}
+	
+	override method esUnSerVivo() = true
 }
 
 class MateriaOscura inherits Material{
@@ -158,6 +240,7 @@ class Bateria inherits Material{
 	override method energiaQueProduce() = self.gramosDeMetal() * 2 
 	
 	method componentes() = componentes
+	
 }
 
 class Circuito inherits Material{
