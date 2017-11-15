@@ -264,6 +264,7 @@ object rick{
 	var companiero 
 	var mochila = []
 	var experimentos = []
+	var estrategia ////parte 5
 	var componentesParaExperimento = []
 	
 	method recibir(unosMateriales){
@@ -302,8 +303,16 @@ object rick{
 	method companiero() = companiero
 	
 	method componentesParaExperimento(componentes){
-		componentesParaExperimento = componentes
+		componentesParaExperimento = self.aplicarEstrategia(componentes)
 	}
+	
+	method estrategiaDeSeleccion(unaEstrategia){ ////parte 5
+		estrategia = unaEstrategia
+	}
+	
+	method estrategiaDeSeleccion() = estrategia ////parte 5
+	
+	method aplicarEstrategia(componentes)= estrategia.seleccion(componentes)////parte 5
 }
 
 
@@ -384,3 +393,15 @@ class ShockElectrico inherits Experimento{
 
 }
 	 
+	 
+class Estrategia{	////parte 5
+	method seleccion(componentes)
+}
+
+class AlAzar inherits Estrategia{
+	override method seleccion(componentes) = componentes.anyOne()
+}
+
+class MenorCantidaDeMetal inherits Estrategia{
+	override method seleccion(componentes) = componentes.filter
+}
