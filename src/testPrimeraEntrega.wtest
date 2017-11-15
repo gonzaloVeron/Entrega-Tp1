@@ -150,7 +150,7 @@ describe "test Morty"{
 		
 		rick.realizar(experimentoBateria)
 		assert.equals(bateria1.componentes(),rick.mochila())
-		//assert.equals(133,rick.companiero().energia())
+		assert.equals(133,rick.companiero().energia())
 	}
 
 }

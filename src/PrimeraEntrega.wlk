@@ -389,7 +389,7 @@ class ShockElectrico inherits Experimento{
 }
 	 
 	 
-class Estrategia{	////parte 5
+class Estrategia{////parte 5
 	method seleccion(componentes)
 }
 
