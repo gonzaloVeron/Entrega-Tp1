@@ -410,3 +410,18 @@ class MenorCantidaDeMetal inherits Estrategia{
 	override method seleccion(componentes) = componentes.min({componente=>componente.gramosDeMetal()})
 }
 
+class MejorGeneradorElectrico inherits Estrategia{
+	override method seleccion(componentes) = componentes.max({componente=>componente.energiaQueProduce()})
+}
+
+class Ecologico inherits Estrategia{
+	override method seleccion(componentes){
+		if(componentes.any({componente=>componente.esUnSerVivo()})){
+			return componentes.find({componente=>componente.esUnSerVivo()})
+		}
+		if(componentes.any({componente=>!componente.esRadiactivo()})){
+			return componentes.find({componente=>!componente.esRadiactivo()})
+		}
+		return componentes.anyOne()
+	}
+} 
