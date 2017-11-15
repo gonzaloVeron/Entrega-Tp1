@@ -282,7 +282,8 @@ object rick{
 		self.removerMateriales(componentesParaExperimento)
 	}
 	
-	method removerMateriales(materiales){
+	method removerMateriales(materiales){////parte 5  modificar??
+		//mochila.remove(material)
 		mochila.removeAll(materiales)
 	}
 
@@ -302,8 +303,9 @@ object rick{
 	
 	method companiero() = companiero
 	
-	method componentesParaExperimento(componentes){
-		componentesParaExperimento = self.aplicarEstrategia(componentes)
+	method componentesParaExperimento(componentes){ ////parte 5 modificar??
+		////componentesParaExperimento = self.aplicarEstrategia(componentes)
+		componentesParaExperimento += [self.aplicarEstrategia(componentes)]
 	}
 	
 	method estrategiaDeSeleccion(unaEstrategia){ ////parte 5
@@ -312,7 +314,9 @@ object rick{
 	
 	method estrategiaDeSeleccion() = estrategia ////parte 5
 	
-	method aplicarEstrategia(componentes)= estrategia.seleccion(componentes)////parte 5
+	method aplicarEstrategia(componentes) {
+		return estrategia.seleccion(componentes)////parte 5
+	}
 }
 
 
@@ -378,7 +382,7 @@ class ShockElectrico inherits Experimento{
 		}
 	}
 
-	override method efecto(materiales){
+	override method efecto(materiales){////parte 5, modificar??
 		rick.companiero().aumentarEnergia(materiales.sum({material=> material.energiaQueProduce()}) * materiales.sum({material => material.conductividadElectrica()}))
 	}
 	
@@ -403,5 +407,6 @@ class AlAzar inherits Estrategia{
 }
 
 class MenorCantidaDeMetal inherits Estrategia{
-	override method seleccion(componentes) = componentes.filter
+	override method seleccion(componentes) = componentes.min({componente=>componente.gramosDeMetal()})
 }
+
