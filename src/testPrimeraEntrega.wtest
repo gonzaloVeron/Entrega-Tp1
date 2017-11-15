@@ -41,7 +41,6 @@ describe "test Morty"{
 		rick.aprenderNuevoExperimento(experimentoBateria)
 		rick.aprenderNuevoExperimento(experimentoCircuito)
 		rick.aprenderNuevoExperimento(experimentoShockElectrico)
-		rick.estrategiaDeSeleccion(new AlAzar())
 	}
 		
 	test "prueba de un material Lata"{
@@ -120,7 +119,7 @@ describe "test Morty"{
 		morty.darObjetosA(rick)
 		
 		rick.realizar(experimentoBateria)
-		//assert.equals(bateria1.componentes(),rick.mochila().first().componentes())
+		assert.equals(bateria1.componentes(),rick.mochila().first().componentes())
 		assert.equals(133,rick.companiero().energia())
 	}
 	
@@ -140,9 +139,8 @@ describe "test Morty"{
 		morty.darObjetosA(rick)
 		
 		rick.realizar(experimentoShockElectrico)
-		//assert.equals(7823.5 ,rick.companiero().energia())
-		assert.that(true)
-		//assert.equals([],rick.mochila())
+		assert.equals(7823.5 ,rick.companiero().energia())
+		assert.equals([],rick.mochila())
 	}
 	
 	test "rick realiza el experimento ContruirBateria con estrategia Al azar"{
@@ -151,8 +149,8 @@ describe "test Morty"{
 		morty.darObjetosA(rick)
 		
 		rick.realizar(experimentoBateria)
-		//assert.equals(bateria1.componentes(),rick.mochila())
-		assert.equals(133,rick.companiero().energia())
+		assert.equals(bateria1.componentes(),rick.mochila())
+		//assert.equals(133,rick.companiero().energia())
 	}
 
 }
