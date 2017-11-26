@@ -406,13 +406,28 @@ object rick{
 class Experimento{
 	method cumpleLosRequisito(materiales)	
 	method efecto(materiales)
-	method materialesParaRealizarlo(materiales, estrategia)//template
+	method materialesParaRealizarlo(materiales, estrategia){
+		if(materiales.any(self.cumpleTodosLosRequisitos())){
+			return [estrategia.seleccion(materiales.filter(self.cumpleTodosLosRequisitos()))]
+		}
+		else{
+			return [estrategia.seleccion(materiales.filter(self.cumpleLaPrimeraCondicion())), estrategia.seleccion(materiales.filter(self.cumpleLaSegundaCondicion()))]
+		}
+	}
+	method cumpleTodosLosRequisitos()
+	method cumpleLaPrimeraCondicion()
+	method cumpleLaSegundaCondicion()
 }
 
 
 class ConstruirBateria inherits Experimento{
 	override method cumpleLosRequisito(materiales) = self.hayMaterialConMasDe200GramosDeMetal(materiales) && self.hayMaterialRadiactivo(materiales)
+
+	method hayMaterialConMasDe200GramosDeMetal(materiales) = materiales.any({material => material.gramosDeMetal() > 200})
 	
+	method hayMaterialRadiactivo(materiales) = materiales.any({material => material.esRadiactivo()})	
+
+	/* 
 	override method materialesParaRealizarlo(materiales, estrategia){
 		if(materiales.any({material => material.gramosDeMetal()>200 && material.esRadiactivo()})){
 			return [estrategia.seleccion(materiales.filter({material => material.gramosDeMetal()>200 && material.esRadiactivo()}))]
@@ -421,9 +436,18 @@ class ConstruirBateria inherits Experimento{
 			return [estrategia.seleccion(self.materialesConMasDe200GramosDeMetal(materiales)), estrategia.seleccion(self.materialRadiactivo(materiales))]
 		}
 	}
+	*/
 	
+	override method cumpleTodosLosRequisitos() = {material => material.gramosDeMetal()>200 && material.esRadiactivo()}
+	
+	override method cumpleLaPrimeraCondicion() = {material => material.gramosDeMetal()>200}
+	
+	override method cumpleLaSegundaCondicion() = {material => material.esRadiactivo()}
+	
+	//borrar??
 	method materialesConMasDe200GramosDeMetal(materiales) = materiales.filter({material => material.gramosDeMetal()>200})
 
+	//borrar??
 	method materialRadiactivo(materiales) = materiales.filter({material => material.esRadiactivo()})
 
 	override method efecto(materiales){
@@ -431,21 +455,21 @@ class ConstruirBateria inherits Experimento{
 		rick.companiero().perderEnergia(5)
 	}
 
-	method hayMaterialConMasDe200GramosDeMetal(materiales) = materiales.any({material => material.gramosDeMetal() > 200})
-	
-	method hayMaterialRadiactivo(materiales) = materiales.any({material => material.esRadiactivo()})	
 }
 
 class ConstruirCircuito inherits Experimento{
-	override method cumpleLosRequisito(materiales) = materiales.any({material => material.conductividadElectrica() >= 5})
+	override method cumpleLosRequisito(materiales) = materiales.any(self.cumpleTodosLosRequisitos())
 	
 	override method efecto(materiales){
 		rick.agregarMaterial(new Circuito(materiales))
 	}
 	
 	////parte 5 
-	override method materialesParaRealizarlo(materiales, estrategia) = [estrategia.seleccion(materiales.filter({material => material.conductividadElectrica() >= 5}))]
+	override method materialesParaRealizarlo(materiales, estrategia) = materiales.filter(self.cumpleTodosLosRequisitos())
 	
+	override method cumpleTodosLosRequisitos() = {material => material.conductividadElectrica() >= 5}
+	override method cumpleLaPrimeraCondicion() = {}
+	override method cumpleLaSegundaCondicion() = {}
 }
 
 class ShockElectrico inherits Experimento{
@@ -457,20 +481,27 @@ class ShockElectrico inherits Experimento{
 	
 	method hayMaterialGenerador(materiales) = materiales.any({material => material.energiaQueProduce() > 0})
 	
+	/* 
 	override method materialesParaRealizarlo(materiales, estrategia){
 		if(materiales.any({material => material.conductividadElectrica() > 0 && material.energiaQueProduce() > 0})){
-			return [estrategia.seleccion(materiales.filter({material => material.conductividadElectrica()>200 && material.energiaQueProduce()}))]
+			return [estrategia.seleccion(materiales.filter({material => material.conductividadElectrica()>0 && material.energiaQueProduce()>0}))]
 		}
 		else{
 			return [estrategia.seleccion(self.materialConductor(materiales)) , estrategia.seleccion(self.materialGenerador(materiales))]
 		}
 	}
-
+*/
+	override method cumpleTodosLosRequisitos() = {material => material.conductividadElectrica() > 0 && material.energiaQueProduce() > 0}
+	
+	override method cumpleLaPrimeraCondicion() = {material=>material.conductividadElectrica() > 0}
+	
+	override method cumpleLaSegundaCondicion() = {material=>material.energiaQueProduce() > 0}
+	
 	override method efecto(materiales){
 		rick.companiero().aumentarEnergia(materiales.sum({material=> material.energiaQueProduce()}) * materiales.sum({material => material.conductividadElectrica()}))
 	}
 	
-	
+	/* 
 	method capacidadConductor(materiales) = self.materialConductor(materiales).conductividadElectrica()
 	
 	method capacidadGenerador(materiales) = self.materialGenerador(materiales).energiaQueProduce()
@@ -478,7 +509,8 @@ class ShockElectrico inherits Experimento{
 	method materialConductor(materiales) = materiales.filter({material=>material.conductividadElectrica() > 0})
 
 	method materialGenerador(materiales) = materiales.filter({material=>material.energiaQueProduce() > 0})
-
+	*/
+	
 }
 	 
 	 
