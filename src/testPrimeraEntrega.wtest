@@ -26,6 +26,18 @@ describe "test Morty"{
  	var experimentoCircuito = new ConstruirCircuito()
 	var experimentoShockElectrico = new ShockElectrico()
 	//--
+	
+	//-- AccionParasito
+	var descartar = new Descartar()
+	var incrementar = new Incrementar()
+	var encontrarOculto = new EncontrarOculto()
+	//--
+	
+	//-- ParasitoAsesino
+	var parasitoUno = new ParasitoAlienigena([descartar,incrementar],20,cableRojo)
+	var parasitoDos = new ParasitoAlienigena([encontrarOculto],10,cableAzul)
+	//-- 
+	
 
 	var materiaOscuraClara = new MateriaOscura(lataDeSardinas)
 	var bateria1 = new Bateria([lataPesada,fleebViejo])
@@ -151,6 +163,16 @@ describe "test Morty"{
 		rick.realizar(experimentoBateria)
 		assert.equals(bateria1.componentes(),rick.mochila())
 		assert.equals(133,rick.companiero().energia())
+	}
+	test "morty recolecta un ParasitoAlienigena: parasitoUno"{
+		morty.recolectar(lataPesada)
+		morty.recolectar(parasitoUno)
+		assert.equals([parasitoUno],morty.mochila())
+		assert.equals(170,morty.energia()) //
+	}
+	test "morty recolecta un ParasitoAlienigena: parasitoDos"{
+		morty.recolectar(parasitoDos)// energia despues de esta recoleccion:140
+		assert.equals([cableAzul,parasitoDos],morty.mochila())
 	}
 
 }

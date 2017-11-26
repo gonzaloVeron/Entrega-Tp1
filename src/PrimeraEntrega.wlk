@@ -28,10 +28,20 @@ class Companiero {
 	method bonusPorRecolectar(unMaterial){
 		energia += unMaterial.bonusPorRecolectar()
 	}
+	method alteracionPorRecolectar(unMaterial){
+		unMaterial.accionesPorRecolectar(self)
+	}
+	method quitarObjeto(unElemento){
+		if(mochila.contains(unElemento)){
+			mochila.remove(unElemento)
+		}
+	}
 	
 	method energia() = energia
 	
 	method mochila() = mochila
+	
+	method mochilaEstaVacia() =  mochila.isEmpty()
 	
 	method verificarQuePuedeRecolectar(unMaterial){
 		if(!self.puedeRecolectar(unMaterial)){
@@ -43,6 +53,7 @@ class Companiero {
 		unCompaniero.recibir(mochila)
 		mochila.clear()
 	}
+	
 }
 
 /** ---------------------------- */
@@ -53,6 +64,7 @@ class Morty inherits Companiero{
 		
 	override method recolectar(unMaterial){
 		self.verificarQuePuedeRecolectar(unMaterial)
+		self.alteracionPorRecolectar(unMaterial)
 		mochila.add(unMaterial)
 		self.consumirEnergia(unMaterial)
 		self.bonusPorRecolectar(unMaterial)
@@ -88,9 +100,12 @@ class Summer inherits Companiero{
 }
 
 /** -------------------------------- */
-
 class Jerry inherits Companiero{
 	var humor
+	
+	method ponerHumor(unHumor){  // esto no estaba
+		humor = unHumor
+	}
 	
 	override method cuantoPuedeCargar() = mochila.size() < humor.cantidadQuePuedeLlevar()
 	
@@ -163,6 +178,8 @@ class Material{
 	method bonusPorRecolectar() = 0
 	
 	method esUnSerVivo() = false 
+	
+	method accionesPorRecolectar(unRecolector){}
 }
 
 class Lata inherits Material{
@@ -276,7 +293,60 @@ class Circuito inherits Material{
 	
 	method componentes() = componentes
 }
+class ParasitoAlienigena inherits Material{
+	var acciones = []
+	var energia 
+	var elementoOculto 
+	constructor(unaListaDeAcciones,unaEnergia,unElementoOculto){
+		acciones = unaListaDeAcciones
+		energia =  unaEnergia
+		elementoOculto = unElementoOculto
+	}
+	
+	override method gramosDeMetal()= 10
+	
+	override method conductividadElectrica() = 0
+	
+	override method energiaQueProduce() = 5
+			
+	override method esUnSerVivo() = true 
+	
+	override method accionesPorRecolectar(unRecolector){
+		acciones.forEach({accion=>accion.efecto(energia,elementoOculto,unRecolector)})
+	}
+}
+/*---------------------------------------------------------------------------------- */
+class Accion{
+	method efecto(unaEnergia,unElementoOculto,unRecolector)
+}
 
+class Apurar inherits Accion{
+	override method efecto(unaEnergia,unElementoOculto,unRecolector){
+		unRecolector.DarObjetosA(0) //en companiero tiene q estar la variable del companiero rick
+	}
+}
+class Descartar inherits Accion{
+	override method efecto(unaEnergia,unElementoOculto,unRecolector){
+		if(! unRecolector.mochilaEstaVacia()){
+		unRecolector.quitarObjeto(unRecolector.mochila().anyOne())
+		}
+	}
+}
+class Incrementar inherits Accion{
+	override method efecto(unaEnergia,unElementoOculto,unRecolector){
+		unRecolector.aumentarEnergia((unRecolector.energia()*unaEnergia)/100)
+	}
+}
+class Decrementar inherits Accion{
+	override method efecto(unaEnergia,unElementoOculto,unRecolector){
+		unRecolector.bajarEnergia((unRecolector.energia()*unaEnergia)/100)
+	}
+}
+class EncontrarOculto inherits Accion{
+	override method efecto(unaEnergia,unElementoOculto,unRecolector){
+		unRecolector.recolectar(unElementoOculto)
+	}
+}
 /*---------------------------------------------------------------------------------- */
 
 object rick{
