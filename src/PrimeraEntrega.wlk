@@ -292,6 +292,7 @@ class Circuito inherits Material{
 	
 	method componentes() = componentes
 }
+
 class ParasitoAlienigena inherits Material{
 	var acciones = []
 	constructor(unaListaDeAcciones){
@@ -310,6 +311,7 @@ class ParasitoAlienigena inherits Material{
 		acciones.forEach({accion=>accion.efecto(unRecolector)})
 	}
 }
+
 /*---------------------------------------------------------------------------------- */
 class Accion{
 	method efecto(unRecolector)
@@ -373,8 +375,7 @@ object rick{
 		self.removerMateriales(componentesParaExperimento)
 	}
 	
-	method removerMateriales(materiales){////parte 5  modificar??
-		//mochila.remove(material)
+	method removerMateriales(materiales){////parte 5
 		mochila.removeAll(materiales)
 	}
 
@@ -405,7 +406,7 @@ object rick{
 class Experimento{
 	method cumpleLosRequisito(materiales)	
 	method efecto(materiales)
-	method materialesParaRealizarlo(materiales, estrategia)
+	method materialesParaRealizarlo(materiales, estrategia)//template
 }
 
 
@@ -498,13 +499,5 @@ class MejorGeneradorElectrico inherits Estrategia{
 }
 
 class Ecologico inherits Estrategia{
-	override method seleccion(componentes){
-		if(componentes.any({componente=>componente.esUnSerVivo()})){
-			return componentes.find({componente=>componente.esUnSerVivo()})
-		}
-		if(componentes.any({componente=>!componente.esRadiactivo()})){
-			return componentes.find({componente=>!componente.esRadiactivo()})
-		}
-		return componentes.anyOne()
-	}
+	override method seleccion(componentes) = componentes.findOrElse({componente=>componente.esUnSerVivo()}, {componentes.findOrElse({componente=>!componente.esRadiactivo()}, {componentes.anyOne()})})
 } 
