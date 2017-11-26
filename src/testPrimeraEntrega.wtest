@@ -29,13 +29,13 @@ describe "test Morty"{
 	
 	//-- AccionParasito
 	var descartar = new Descartar()
-	var incrementar = new Incrementar()
-	var encontrarOculto = new EncontrarOculto()
+	var incrementar = new Incrementar(20)
+	var encontrarOculto = new EncontrarOculto(cableAzul)
 	//--
 	
 	//-- ParasitoAsesino
-	var parasitoUno = new ParasitoAlienigena([descartar,incrementar],20,cableRojo)
-	var parasitoDos = new ParasitoAlienigena([encontrarOculto],10,cableAzul)
+	var parasitoUno = new ParasitoAlienigena([descartar,incrementar])
+	var parasitoDos = new ParasitoAlienigena([encontrarOculto])
 	//-- 
 	
 
@@ -171,7 +171,7 @@ describe "test Morty"{
 		assert.equals(170,morty.energia()) //
 	}
 	test "morty recolecta un ParasitoAlienigena: parasitoDos"{
-		morty.recolectar(parasitoDos)// energia despues de esta recoleccion:140
+		morty.recolectar(parasitoDos)
 		assert.equals([cableAzul,parasitoDos],morty.mochila())
 	}
 

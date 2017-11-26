@@ -295,12 +295,8 @@ class Circuito inherits Material{
 }
 class ParasitoAlienigena inherits Material{
 	var acciones = []
-	var energia 
-	var elementoOculto 
-	constructor(unaListaDeAcciones,unaEnergia,unElementoOculto){
+	constructor(unaListaDeAcciones){
 		acciones = unaListaDeAcciones
-		energia =  unaEnergia
-		elementoOculto = unElementoOculto
 	}
 	
 	override method gramosDeMetal()= 10
@@ -312,39 +308,47 @@ class ParasitoAlienigena inherits Material{
 	override method esUnSerVivo() = true 
 	
 	override method accionesPorRecolectar(unRecolector){
-		acciones.forEach({accion=>accion.efecto(energia,elementoOculto,unRecolector)})
+		acciones.forEach({accion=>accion.efecto(unRecolector)})
 	}
 }
 /*---------------------------------------------------------------------------------- */
 class Accion{
-	method efecto(unaEnergia,unElementoOculto,unRecolector)
+	method efecto(unRecolector)
 }
 
 class Apurar inherits Accion{
-	override method efecto(unaEnergia,unElementoOculto,unRecolector){
-		unRecolector.DarObjetosA(0) //en companiero tiene q estar la variable del companiero rick
+	override method efecto(unRecolector){
+		unRecolector.DarObjetosA(0) //en companiero tiene q estar la variable del companieroCreador rick
 	}
 }
 class Descartar inherits Accion{
-	override method efecto(unaEnergia,unElementoOculto,unRecolector){
+	override method efecto(unRecolector){
 		if(! unRecolector.mochilaEstaVacia()){
 		unRecolector.quitarObjeto(unRecolector.mochila().anyOne())
 		}
 	}
 }
 class Incrementar inherits Accion{
-	override method efecto(unaEnergia,unElementoOculto,unRecolector){
-		unRecolector.aumentarEnergia((unRecolector.energia()*unaEnergia)/100)
+	var porcenEnergia
+	constructor(unPorcentajeDeEnergia){
+		porcenEnergia = unPorcentajeDeEnergia
+	}
+	override method efecto(unRecolector){
+		unRecolector.aumentarEnergia((unRecolector.energia()*porcenEnergia)/100)
 	}
 }
-class Decrementar inherits Accion{
-	override method efecto(unaEnergia,unElementoOculto,unRecolector){
-		unRecolector.bajarEnergia((unRecolector.energia()*unaEnergia)/100)
+class Decrementar inherits Incrementar{
+	override method efecto(unRecolector){
+		unRecolector.bajarEnergia((unRecolector.energia()*porcenEnergia)/100)
 	}
 }
 class EncontrarOculto inherits Accion{
-	override method efecto(unaEnergia,unElementoOculto,unRecolector){
-		unRecolector.recolectar(unElementoOculto)
+	var elementoOculto 
+	constructor(unElemento){
+		elementoOculto = unElemento 
+	}
+	override method efecto(unRecolector){
+		unRecolector.recolectar(elementoOculto)
 	}
 }
 /*---------------------------------------------------------------------------------- */
