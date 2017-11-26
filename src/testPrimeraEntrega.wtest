@@ -1,7 +1,7 @@
 import PrimeraEntrega.*
 
 describe "test Morty"{ 	
-	var morty = new Morty(400)
+	var morty = new Morty(400,rick)
 	
 	//--Latas
 	var lataDeGaseosa = new Lata(1)
@@ -28,6 +28,7 @@ describe "test Morty"{
 	//--
 	
 	//-- AccionParasito
+	var apurar = new Apurar()
 	var descartar = new Descartar()
 	var incrementar = new Incrementar(20)
 	var encontrarOculto = new EncontrarOculto(cableAzul)
@@ -36,6 +37,7 @@ describe "test Morty"{
 	//-- ParasitoAsesino
 	var parasitoUno = new ParasitoAlienigena([descartar,incrementar])
 	var parasitoDos = new ParasitoAlienigena([encontrarOculto])
+	var parasitoTres = new ParasitoAlienigena([apurar])
 	//-- 
 	
 
@@ -111,7 +113,7 @@ describe "test Morty"{
 	test "resultado de morty al darle los elementos(lata pesada y fleebViejo) a rick"{	
 		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
 		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138	
-		morty.darObjetosA(rick)
+		morty.darObjetosACompanieroCreador()
 		
 		assert.equals([lataPesada,fleebViejo],rick.mochila())
 		assert.equals([],morty.mochila())
@@ -120,7 +122,7 @@ describe "test Morty"{
 	test "experimentos q puede relaizar rick"{
 		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
 		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
-		morty.darObjetosA(rick)
+		morty.darObjetosACompanieroCreador()
 		
 		assert.equals([experimentoBateria,experimentoCircuito],rick.experimentosQuePuedeRealizar())
 	}
@@ -128,7 +130,7 @@ describe "test Morty"{
 	test "rick realiza el experimento ContruirBateria"{
 		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
 		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
-		morty.darObjetosA(rick)
+		morty.darObjetosACompanieroCreador()
 		
 		rick.realizar(experimentoBateria)
 		assert.equals(bateria1.componentes(),rick.mochila().first().componentes())
@@ -139,7 +141,7 @@ describe "test Morty"{
 		morty.recolectar(cableRojo)
 		morty.recolectar(cableAzul)
 		morty.recolectar(cableVerde)
-		morty.darObjetosA(rick)
+		morty.darObjetosACompanieroCreador()
 		
 		rick.realizar(experimentoCircuito)
 		assert.equals(circuito1.componentes(),rick.mochila().last().componentes())
@@ -148,7 +150,7 @@ describe "test Morty"{
 	test "rick realiza el experimento shockElectrico"{
 		morty.recolectar(cableAzul)
 		morty.recolectar(bateria1)
-		morty.darObjetosA(rick)
+		morty.darObjetosACompanieroCreador()
 		
 		rick.realizar(experimentoShockElectrico)
 		assert.equals(7823.5 ,rick.companiero().energia())
@@ -158,7 +160,7 @@ describe "test Morty"{
 	test "rick realiza el experimento ContruirBateria con estrategia Al azar"{
 		morty.recolectar(lataPesada) // energia despues de esta recoleccion:150
 		morty.recolectar(fleebViejo) // energia despues de esta recoleccion:138
-		morty.darObjetosA(rick)
+		morty.darObjetosACompanieroCreador()
 		
 		rick.realizar(experimentoBateria)
 		assert.equals(bateria1.componentes(),rick.mochila())
@@ -173,6 +175,11 @@ describe "test Morty"{
 	test "morty recolecta un ParasitoAlienigena: parasitoDos"{
 		morty.recolectar(parasitoDos)
 		assert.equals([cableAzul,parasitoDos],morty.mochila())
+	}
+	test "morty recolecta un ParasitoAlienigena: parasitoTres"{
+		morty.recolectar(lataPesada)
+		morty.recolectar(parasitoTres)
+		assert.equals([lataPesada],rick.mochila())
 	}
 
 }

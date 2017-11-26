@@ -1,9 +1,13 @@
 class Companiero {
 	var energia 
 	var mochila = []
-	
-	constructor(_energia){
+	var companieroCreador
+	constructor(_energia,unCreador){
 		energia = _energia
+		companieroCreador = unCreador
+	}
+	method cambiarCompanieroCreador(unCreador){
+		companieroCreador = unCreador
 	}
 
 	method puedeRecolectar(unMaterial){ //Template method
@@ -49,8 +53,8 @@ class Companiero {
 		}
 	}
 	
-	method darObjetosA(unCompaniero){
-		unCompaniero.recibir(mochila)
+	method darObjetosACompanieroCreador(){
+		companieroCreador.recibir(mochila)
 		mochila.clear()
 	}
 	
@@ -92,9 +96,8 @@ class Summer inherits Companiero{
 		energia -= (unMaterial.energiaParaRecolectarlo() - unMaterial.energiaParaRecolectarlo() * 0.20)
 	}
 	
-	override method darObjetosA(unCompaniero){
-		unCompaniero.recibir(mochila)
-		unCompaniero.restarEnergia(10)
+	override method darObjetosACompanieroCreador(){
+		companieroCreador.recibir(mochila)
 		mochila.clear()
 	}	
 }
@@ -102,10 +105,6 @@ class Summer inherits Companiero{
 /** -------------------------------- */
 class Jerry inherits Companiero{
 	var humor
-	
-	method ponerHumor(unHumor){  // esto no estaba
-		humor = unHumor
-	}
 	
 	override method cuantoPuedeCargar() = mochila.size() < humor.cantidadQuePuedeLlevar()
 	
@@ -318,7 +317,7 @@ class Accion{
 
 class Apurar inherits Accion{
 	override method efecto(unRecolector){
-		unRecolector.DarObjetosA(0) //en companiero tiene q estar la variable del companieroCreador rick
+		unRecolector.darObjetosACompanieroCreador()
 	}
 }
 class Descartar inherits Accion{
