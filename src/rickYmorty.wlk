@@ -11,7 +11,7 @@ class Companiero {
 		companieroCreador = unCreador
 	}
 
-	method puedeRecolectar(unMaterial){ //Template method
+	method puedeRecolectar(unMaterial){
 		return self.tieneEnergia(unMaterial) && self.cuantoPuedeCargar()
 	}
 		
@@ -36,7 +36,7 @@ class Companiero {
 		energia -= valor
 	}	
 	method bonusPorRecolectar(unMaterial){
-		energia += unMaterial.bonusPorRecolectar()
+		unMaterial.bonusPorRecolectar(self)
 	}
 	method quitarObjeto(unElemento){
 		if(mochila.contains(unElemento)){
@@ -174,12 +174,15 @@ class Material{
 	
 	method energiaParaRecolectarlo() = self.gramosDeMetal()
 	
-	method bonusPorRecolectar() = 0
+	method bonusPorRecolectar(alguien){
+		alguien.aumentarEnergia(0)
+	}
 	
 	method esUnSerVivo() = false 
 	
 	method accionesPorRecolectar(unRecolector){}
 }
+
 
 class Lata inherits Material{
 	var cantMetal
@@ -234,7 +237,13 @@ class Fleeb inherits Material{
 	
 	override method energiaParaRecolectarlo() =  super() * 2 			
 
-	override method bonusPorRecolectar() = if(self.esRadiactivo()) 0 else 10
+	override method bonusPorRecolectar(alguien){
+		if(self.esRadiactivo()){
+			alguien.aumentarEnergia(0)
+		}else{
+			alguien.aumentarEnergia(10)
+		}		
+	}
 	
 	override method esUnSerVivo() = true
 }
@@ -252,39 +261,6 @@ class MateriaOscura inherits Material{
 	
 }
 
-class Bateria inherits Material{
-	var componentes
-	
-	constructor(_componentes){
-		componentes = _componentes
-	}
-	
-	override method gramosDeMetal() = componentes.sum({componente=>componente.gramosDeMetal()})
-	
-	override method conductividadElectrica() = 0
-
-	override method esRadiactivo() = true
-	
-	override method energiaQueProduce() = self.gramosDeMetal() * 2 
-	
-	method componentes() = componentes
-	
-}
-
-class Circuito inherits Material{
-	var componentes
-	
-	constructor(_componentes){
-		componentes = _componentes
-	}
-	override method gramosDeMetal() = componentes.sum({componente => componente.gramosDeMetal()})
-	
-	override method conductividadElectrica() = componentes.sum({componente => componente.conductividadElectrica()}) * 3
-
-	override method esRadiactivo() = componentes.any({componente => componente.esRadiactivo()})
-	
-	method componentes() = componentes
-}
 
 class ParasitoAlienigena inherits Material{
 	var acciones = []
@@ -304,6 +280,39 @@ class ParasitoAlienigena inherits Material{
 		acciones.forEach({accion=>accion.efecto(unRecolector)})
 	}
 }
+
+/** ---------------------------------------------------------------------- */
+
+class MaterialExperimental inherits Material{
+	var componentes
+	constructor(unosComponentes){
+		componentes = unosComponentes
+	}
+	
+	method componentes() = componentes
+	
+	override method gramosDeMetal() = componentes.sum({componente => componente.gramosDeMetal()})
+}
+
+class Bateria inherits MaterialExperimental{
+	
+	override method conductividadElectrica() = 0
+
+	override method esRadiactivo() = true
+	
+	override method energiaQueProduce() = self.gramosDeMetal() * 2 
+		
+}
+
+class Circuito inherits MaterialExperimental{
+	
+	override method conductividadElectrica() = componentes.sum({componente => componente.conductividadElectrica()}) * 3
+
+	override method esRadiactivo() = componentes.any({componente => componente.esRadiactivo()})
+
+}
+
+
 
 /*---------------------------------------------------------------------------------- */
 class Accion{
@@ -351,7 +360,7 @@ object rick{
 	var companiero 
 	var mochila = []
 	var experimentos = []
-	var estrategia = new AlAzar()////parte 5
+	var estrategia = new AlAzar()
 	
 	method recibir(unosMateriales){
 		mochila.addAll(unosMateriales) 
@@ -363,12 +372,12 @@ object rick{
 		if(!unExperimento.cumpleLosRequisito(mochila)){
 			self.error("No puede realizar el experimento")
 		}
-		var componentesParaExperimento = unExperimento.materialesParaRealizarlo(mochila, estrategia)//parte 5
+		var componentesParaExperimento = unExperimento.materialesParaRealizarlo(mochila, estrategia)
 		unExperimento.efecto(componentesParaExperimento)	
 		self.removerMateriales(componentesParaExperimento)
 	}
 	
-	method removerMateriales(materiales){////parte 5
+	method removerMateriales(materiales){
 		mochila.removeAll(materiales)
 	}
 
@@ -388,11 +397,11 @@ object rick{
 	
 	method companiero() = companiero
 	
-	method estrategiaDeSeleccion(unaEstrategia){ ////parte 5
+	method estrategiaDeSeleccion(unaEstrategia){
 		estrategia = unaEstrategia
 	}
 	
-	method estrategiaDeSeleccion() = estrategia ////parte 5
+	method estrategiaDeSeleccion() = estrategia
 }
 
 
@@ -429,10 +438,10 @@ class ConstruirCircuito inherits Experimento{
 		rick.agregarMaterial(new Circuito(materiales))
 	}
 	
-	////parte 5 
-	override method materialesParaRealizarlo(materiales, estrategia) = materiales.filter({material => material.conductividadElectrica() >= 5})
+	override method materialesParaRealizarlo(materiales, estrategia) = materiales.filter(self.cumpleLaPrimeraCondicion())
 	
-	override method cumpleLaPrimeraCondicion() = {}
+	override method cumpleLaPrimeraCondicion() = {material => material.conductividadElectrica() >= 5}
+	
 	override method cumpleLaSegundaCondicion() = {}
 }
 
@@ -445,17 +454,21 @@ class ShockElectrico inherits Experimento{
 	
 	method hayMaterialGenerador(materiales) = materiales.any(self.cumpleLaSegundaCondicion())
 	
-	override method cumpleLaPrimeraCondicion() = {material=>material.conductividadElectrica() > 0}
+	override method cumpleLaSegundaCondicion() = {material=>material.conductividadElectrica() > 0}
 	
-	override method cumpleLaSegundaCondicion() = {material=>material.energiaQueProduce() > 0}
+	override method cumpleLaPrimeraCondicion() = {material=>material.energiaQueProduce() > 0}
 	
 	override method efecto(materiales){
-		rick.companiero().aumentarEnergia(materiales.first().energiaQueProduce() * materiales.last().conductividadElectrica())	//Corregido
+		rick.companiero().aumentarEnergia(self.energiaDelPrimerElemento(materiales) * self.conductividadDelSegundoElemento(materiales))
 	}
+	
+	method energiaDelPrimerElemento(materiales) = materiales.first().energiaQueProduce()
+
+	method conductividadDelSegundoElemento(materiales) = materiales.last().conductividadElectrica()
 }
 
 	 
-class Estrategia{////parte 5
+class Estrategia{
 	method seleccion(componentes)
 }
 
