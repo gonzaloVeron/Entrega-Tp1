@@ -1,0 +1,127 @@
+import wollok.game.*
+import rickYmorty.*
+
+class Limite{
+	var imagen = "Invisible.png"
+}
+
+/**------------ Generador de colisiones ----------------------- */
+class CrearColision {
+	method crear(cajita, posicion)
+	
+}
+
+class CrearColisionIzq inherits CrearColision{
+	override method crear(cajita, posicion) {
+		posicion.drawElement(cajita)
+		game.whenCollideDo(cajita, { jugador => jugador.moverDer()})
+	}	
+}
+
+class CrearColisionDer inherits CrearColision {
+	override method crear(cajita, posicion) {
+		posicion.drawElement(cajita)
+		game.whenCollideDo(cajita, { jugador => jugador.moverIzq()})
+	}	
+}
+
+class CrearColisionArriba inherits CrearColision {
+	override method crear(cajita, posicion) {
+		posicion.drawElement(cajita)
+		game.whenCollideDo(cajita, { jugador => jugador.moverAbajo()})
+	}	
+}
+
+class CrearColisionAbajo inherits CrearColision{
+	override method crear(cajita, posicion) {
+		posicion.drawElement(cajita)
+		game.whenCollideDo(cajita, { jugador => jugador.moverArriba()})
+	}	
+}
+/**----------------------------------------------------------------- */
+class VisualizadorDeMochilas{
+	var personaje1
+	var personaje2
+	
+	constructor(unPersonaje,otroPersonaje){
+		personaje1 = unPersonaje
+		personaje2 = otroPersonaje
+	}
+	
+	method verMochilas(){
+		personaje1.verMochila()
+		personaje2.verMochila()
+	}
+}
+
+program juego {
+	/* Experimentos */	
+	const crearBateria = new ConstruirBateria()
+	const crearCircuito = new ConstruirCircuito()
+	const hacerShockElectrico = new ShockElectrico()
+	/* ---------  */
+		
+	/* Materiales */
+	const unCable = new Cable(50,50)
+	const unaLata = new Lata(50)
+	const materiaOscura = new MateriaOscura(new Lata(15))
+	const fleeb = new Fleeb(5)
+	const parasitoAlienigena = new ParasitoAlienigena(new Decrementar())
+	/* ---------- */
+	
+	const morty = new Morty(100,rick)
+	const visualizador = new VisualizadorDeMochilas(morty,rick)
+	
+	fleeb.consumirMaterial(new Lata(20))
+	fleeb.consumirMaterial(new Cable(70,5))
+	rick.aprenderNuevoExperimento(crearBateria)
+	rick.aprenderNuevoExperimento(crearCircuito)
+	rick.aprenderNuevoExperimento(hacerShockElectrico)
+
+	/* Configuracion del juego */ 
+	game.title("Rick Y Morty")
+	game.height(15)
+	game.width(25)
+	game.ground("Piso.png")
+	/* ----------------------  */
+	
+	/* Creacion de los limites */
+	var largo = game.height() - 1
+	var ancho = game.width() - 1
+	
+	(0..largo).forEach({unaPos => new CrearColisionIzq().crear(new Limite(),new Position(0,unaPos))}) //pared izq
+	(0..largo).forEach({unaPos => new CrearColisionDer().crear(new Limite(),new Position(ancho,unaPos))}) //pared der
+	(0+1..ancho-1).forEach({unaPos => new CrearColisionAbajo().crear(new Limite(),new Position(unaPos,0))}) //pared abajo
+	(0+1..ancho-1).forEach({unaPos => new CrearColisionArriba().crear(new Limite(),new Position(unaPos,largo))}) //pared arriba
+	/* ----------------------- */
+
+	
+	/* Teclas para los personajes */
+	R.onPressDo {morty.recolectar(game.getObjectsIn(morty.posicion()).first() )} 
+	V.onPressDo {game.say(morty,"hay un " + game.getObjectsIn(morty.posicion()).first())}
+	I.onPressDo {morty.verMochila()}
+	E.onPressDo {rick.verExperimentosRealizables()}
+	D.onPressDo {if(morty.posicion() == rick.posicion()) morty.darObjetosACompanieroCreador()}
+	Q.onPressDo {game.say(morty,"Tengo " + morty.energia() + " de energia")}
+	M.onPressDo {visualizador.verMochilas()}
+	NUM_1.onPressDo {rick.realizar(crearBateria)}
+	NUM_2.onPressDo {rick.realizar(crearCircuito)}
+	NUM_3.onPressDo {rick.realizar(hacerShockElectrico)}
+	UP.onPressDo {morty.moverArriba()}
+	LEFT.onPressDo {morty.moverIzq()}
+	DOWN.onPressDo {morty.moverAbajo()}
+	RIGHT.onPressDo {morty.moverDer()}
+	/* ------------------------ */
+	
+	/* Visuales */
+	game.addVisual(rick)
+	game.addVisual(unCable)
+	game.addVisual(unaLata)
+	game.addVisual(fleeb)
+	game.addVisual(parasitoAlienigena)
+	game.addVisual(materiaOscura)
+	game.addVisual(morty)
+	/* -------- */
+
+	game.start()
+}

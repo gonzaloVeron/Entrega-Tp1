@@ -2,6 +2,7 @@ class Companiero {
 	var energia 
 	var mochila = []
 	var companieroCreador
+	var posicion = game.at(10,5)
 	constructor(_energia,unCreador){
 		energia = _energia
 		companieroCreador = unCreador
@@ -17,11 +18,16 @@ class Companiero {
 		
 	method cuantoPuedeCargar()	
 		
-	method recolectar(unMaterial){
+	method recolectar(unMaterial){ //Juego 
+		if(unMaterial == self){
+			game.say(self,"No hay nada aqui")
+			self.error("No hay nada")
+		}
 		self.verificarQuePuedeRecolectar(unMaterial)
 		mochila.add(unMaterial)
 		self.consumirEnergia(unMaterial)
 		self.bonusPorRecolectar(unMaterial)
+		game.removeVisual(unMaterial)
 	}
 	
 	method consumirEnergia(unMaterial)
@@ -52,15 +58,47 @@ class Companiero {
 	
 	method verificarQuePuedeRecolectar(unMaterial){
 		if(!self.puedeRecolectar(unMaterial)){
+			game.say(self,"No tengo energia para recolectar")
 			self.error("No puede recolectar")
 		}
 	}
 	
 	method darObjetosACompanieroCreador(){
+		if(mochila.size() == 0){
+			self.error("No tengo nada para darte")
+		}
 		companieroCreador.recibir(mochila)
+		game.say(self,"Toma Rick")
 		mochila.clear()
 	}
 	
+	//----
+	
+	method verMochila(){
+		if(mochila.size() == 0){
+			game.say(self,"No tengo nada en mi mochila")
+		} else{		
+			game.say(self,"En mi mochila hay : " + mochila.map({item => item.nombre()}))
+		}
+	}
+	
+	method posicion() = posicion
+	
+	method moverArriba(){
+		posicion.moveUp(1)
+	}
+	
+	method moverIzq(){
+		posicion.moveLeft(1)
+	}
+	
+	method moverDer(){
+		posicion.moveRight(1)
+	}
+	
+	method moverAbajo(){
+		posicion.moveDown(1)
+	}
 }
 
 /** ---------------------------- */
@@ -81,6 +119,8 @@ class Morty inherits Companiero{
 	method alteracionPorRecolectar(unMaterial){
 		unMaterial.accionesPorRecolectar(self)
 	}
+	
+	method imagen() = "Morty.png"
 }
 
 /** ----------------- */
@@ -96,7 +136,7 @@ class Summer inherits Companiero{
 	override method darObjetosACompanieroCreador(){
 		super()
 		energia -= 10
-	}	
+	}
 }
 
 /** -------------------------------- */
@@ -132,7 +172,7 @@ class Jerry inherits Companiero{
 		if(unMaterial.esRadiactivo()){
 			humor = new SobreExitado()
 		}
-	}		
+	}
 }
 
 /**---------------------------------- */
@@ -163,7 +203,6 @@ class SobreExitado inherits Humor{
 
 /**-------------------------------------------------------------------------------------------------------------------------- */
 class Material{
-
 	method gramosDeMetal()
 	
 	method conductividadElectrica()
@@ -181,6 +220,12 @@ class Material{
 	method esUnSerVivo() = false 
 	
 	method accionesPorRecolectar(unRecolector){}
+
+	method nombre()
+	
+	method imagen()
+	
+	method posicion()
 }
 
 
@@ -194,6 +239,12 @@ class Lata inherits Material{
 	override method gramosDeMetal() = cantMetal
 	
 	override method conductividadElectrica() = self.gramosDeMetal() * 0.1
+
+	override method nombre() = "Lata"
+	
+	override method imagen() = "Lata.png"
+	
+	override method posicion() = game.at(21,3)
 }
 
 class Cable inherits Material{
@@ -208,6 +259,12 @@ class Cable inherits Material{
 	override method gramosDeMetal() = (longitud/1000) * seccion
 	
 	override method conductividadElectrica() = 3 * seccion
+	
+	override method nombre() = "Cable"
+	
+	override method imagen() = "Cable.png"
+	
+	override method posicion() = game.at(10,7)
 }
 
 class Fleeb inherits Material{
@@ -246,6 +303,12 @@ class Fleeb inherits Material{
 	}
 	
 	override method esUnSerVivo() = true
+	
+	override method nombre() = "Fleeb"
+	
+	override method imagen() = "Fleeb.png"
+	
+	override method posicion() = game.at(1,6)
 }
 
 class MateriaOscura inherits Material{
@@ -259,6 +322,11 @@ class MateriaOscura inherits Material{
 	
 	override method energiaQueProduce() = materialBase.energiaQueProduce()*2
 	
+	override method nombre() = "MateriaOscura"
+	
+	override method imagen() = "MateriaOscura.png"
+	
+	override method posicion() = game.at(3,12)
 }
 
 
@@ -279,6 +347,12 @@ class ParasitoAlienigena inherits Material{
 	override method accionesPorRecolectar(unRecolector){
 		acciones.forEach({accion=>accion.efecto(unRecolector)})
 	}
+	
+	override method nombre() = "ParasitoAlienigena"
+	
+	override method imagen() = "ParasitoAlienigena.png"
+	
+	override method posicion() = game.at(16,13)
 }
 
 /** ---------------------------------------------------------------------- */
@@ -301,6 +375,12 @@ class Bateria inherits MaterialExperimental{
 	override method esRadiactivo() = true
 	
 	override method energiaQueProduce() = self.gramosDeMetal() * 2 
+	
+	override method nombre() = "Bateria"
+	
+	override method imagen() = "Bateria.png"
+	
+	override method posicion() = game.at(10,11)
 		
 }
 
@@ -310,6 +390,11 @@ class Circuito inherits MaterialExperimental{
 
 	override method esRadiactivo() = componentes.any({componente => componente.esRadiactivo()})
 
+	override method nombre() = "Circuito"
+	
+	override method imagen() = "Circuito.png"
+	
+	override method posicion() = game.at(10,12)
 }
 
 
@@ -368,13 +453,16 @@ object rick{
 	
 	method experimentosQuePuedeRealizar() = experimentos.filter({experimento=> experimento.cumpleLosRequisito(mochila)})
 	
+	
 	method realizar(unExperimento){
 		if(!unExperimento.cumpleLosRequisito(mochila)){
+			game.say(self,"No puedo realizar el experimento")
 			self.error("No puede realizar el experimento")
 		}
 		var componentesParaExperimento = unExperimento.materialesParaRealizarlo(mochila, estrategia)
 		unExperimento.efecto(componentesParaExperimento)	
 		self.removerMateriales(componentesParaExperimento)
+		game.say(self,"He creado un/a " + unExperimento.nombre() + " !!")
 	}
 	
 	method removerMateriales(materiales){
@@ -402,9 +490,31 @@ object rick{
 	}
 	
 	method estrategiaDeSeleccion() = estrategia
+
+	//-----
+	
+	method verMochila(){
+		if(mochila.size() == 0){
+			game.say(self,"No tengo nada en mi mochila")
+		} else{		
+			game.say(self,"En mi mochila hay : " + mochila.map({item => item.nombre()}))
+		}
+	}
+	
+	method imagen() = "Rick.png"
+	
+	method posicion() = game.at(1,1)
+
+	method verExperimentosRealizables(){
+		if(self.experimentosQuePuedeRealizar().size() == 0){
+			game.say(self,"No puedo realizar ningun experimento")
+		} else{
+			game.say(self,"Puedo realizar: " + self.experimentosQuePuedeRealizar())
+		}
+	}
 }
 
-
+//-----------------------------------------------------------------------------------------------------------------
 
 class Experimento{
 	method cumpleLosRequisito(materiales)	
@@ -412,6 +522,7 @@ class Experimento{
 	method materialesParaRealizarlo(materiales, estrategia) = [estrategia.seleccion(materiales.filter(self.cumpleLaPrimeraCondicion())), estrategia.seleccion(materiales.filter(self.cumpleLaSegundaCondicion()))]
 	method cumpleLaPrimeraCondicion()
 	method cumpleLaSegundaCondicion()
+	method nombre()
 }
 
 class ConstruirBateria inherits Experimento{
@@ -429,6 +540,8 @@ class ConstruirBateria inherits Experimento{
 		rick.agregarMaterial(new Bateria(materiales))
 		rick.companiero().perderEnergia(5)
 	}
+	
+	override method nombre() = "Bateria"
 }
 
 class ConstruirCircuito inherits Experimento{
@@ -443,6 +556,8 @@ class ConstruirCircuito inherits Experimento{
 	override method cumpleLaPrimeraCondicion() = {material => material.conductividadElectrica() >= 5}
 	
 	override method cumpleLaSegundaCondicion() = {}
+	
+	override method nombre() = "Circuito"
 }
 
 class ShockElectrico inherits Experimento{
@@ -465,6 +580,8 @@ class ShockElectrico inherits Experimento{
 	method energiaDelPrimerElemento(materiales) = materiales.first().energiaQueProduce()
 
 	method conductividadDelSegundoElemento(materiales) = materiales.last().conductividadElectrica()
+	
+	override method nombre() = "ShockElectrico"
 }
 
 	 
